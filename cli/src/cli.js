@@ -27,10 +27,13 @@ cli
       callback()
     })
 
+    // receive message from server and log to client
     server.on('data', (buffer) => {
       this.log(Message.fromJSON(buffer).toString())
+      // if user was rejected by server then disconnect from client
       if (Message.fromJSON(buffer).command === 'connect' && Message.fromJSON(buffer).contents.substring(0, 5) === 'Error') {
-        cli.exec('exit')
+        let command = 'disconnectdup'
+        server.end(new Message({ username, command }).toJSON() + '\n')
       }
     })
 
@@ -39,12 +42,12 @@ cli
     })
   })
   .action(function (input, callback) {
+    // regular expression produces array of strings from space delimited string
     let [ command, ...rest ] = words(input, /[^\s]+/g)
     let contents = rest.join(' ')
 
-    this.log(`Command <${command}>  contents <${contents}>  user <${username}>`)
-
     let commandFound = false
+    // send message to server using JSON
     if (command === 'disconnect') {
       server.end(new Message({ username, command }).toJSON() + '\n')
       commandFound = true
@@ -64,10 +67,10 @@ cli
 
     if (commandFound) {
       lastCommand = command
-    } else {
+    } else { // invalid command entered - use last good command
+      // parsed command was actually part of contents
       contents = command + ' ' + contents
       command = lastCommand
-  //    this.log(`Command <${command}>  contents <${contents}>  user <${username}>`)
       if (command === 'echo') {
         server.write(new Message({ username, command, contents }).toJSON() + '\n')
       } else if (command === 'users') {

@@ -22,6 +22,7 @@ export class Message {
   toString () {
     const chalk = require('chalk')
     if (this.command === 'connect') {
+      // was connection denied due to duplicate name
       if (this.contents.substring(0, 5) === 'Error') {
         return (chalk.yellow)(`${this.timestamp}: ${this.contents}`)
       } else {
