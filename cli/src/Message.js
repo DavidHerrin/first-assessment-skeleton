@@ -42,7 +42,7 @@ export class Message {
     }
 
     if (this.command.charAt(0) === '@') {
-      return (chalk.orange)(`${this.timestamp} <${this.username}> (whisper): ${this.contents}`)
+      return (chalk.cyan)(`${this.timestamp} <${this.username}> (whisper): ${this.contents}`)
     }
 
     return this.contents
