@@ -15,12 +15,20 @@ cli
   .delimiter(cli.chalk['yellow']('ftd~$'))
 
 cli
-  .mode('connect <username> <host> <port>')
+  .mode('connect <username> [host] [port]')
   .delimiter(cli.chalk['green']('connected>'))
   .init(function (args, callback) {
     username = args.username
-    host = args.host
-    port = args.port
+    if (args.host !== undefined) {
+      host = args.host
+    } else {
+      host = 'localhost'
+    }
+    if (args.port !== undefined) {
+      port = args.port
+    } else {
+      port = 8080
+    }
 //    server = connect({ host: 'localhost', port: 8080 }, () => {
     server = connect({ host: host, port: port }, () => {
       server.write(new Message({ username, command: 'connect' }).toJSON() + '\n')
