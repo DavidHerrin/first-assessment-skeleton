@@ -21,8 +21,6 @@ cli
     username = args.username
     host = args.host
     port = args.port
-    if (host === null) host = 'localhost'
-    if (port === null) port = 8080
 //    server = connect({ host: 'localhost', port: 8080 }, () => {
     server = connect({ host: host, port: port }, () => {
       server.write(new Message({ username, command: 'connect' }).toJSON() + '\n')
@@ -31,6 +29,9 @@ cli
 
     server.on('data', (buffer) => {
       this.log(Message.fromJSON(buffer).toString())
+      if (Message.fromJSON(buffer).command === 'connect' && Message.fromJSON(buffer).contents.substring(0, 5) === 'Error') {
+        cli.exec('exit')
+      }
     })
 
     server.on('end', () => {
@@ -40,6 +41,8 @@ cli
   .action(function (input, callback) {
     let [ command, ...rest ] = words(input, /[^\s]+/g)
     let contents = rest.join(' ')
+
+    this.log(`Command <${command}>  contents <${contents}>  user <${username}>`)
 
     let commandFound = false
     if (command === 'disconnect') {

@@ -22,7 +22,11 @@ export class Message {
   toString () {
     const chalk = require('chalk')
     if (this.command === 'connect') {
-      return (chalk.yellow)(`${this.timestamp}: <${this.username}> has connected`)
+      if (this.contents.substring(0, 5) === 'Error') {
+        return (chalk.yellow)(`${this.timestamp}: ${this.contents}`)
+      } else {
+        return (chalk.yellow)(`${this.timestamp}: <${this.username}> has connected`)
+      }
     }
 
     if (this.command === 'disconnect') {
