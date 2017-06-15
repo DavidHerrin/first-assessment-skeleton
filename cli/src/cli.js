@@ -21,6 +21,8 @@ cli
     username = args.username
     host = args.host
     port = args.port
+    if (host === null) host = 'localhost'
+    if (port === null) port = 8080
 //    server = connect({ host: 'localhost', port: 8080 }, () => {
     server = connect({ host: host, port: port }, () => {
       server.write(new Message({ username, command: 'connect' }).toJSON() + '\n')
@@ -36,34 +38,33 @@ cli
     })
   })
   .action(function (input, callback) {
-    let [ command, ...rest ] = words(input, /[^,]+/g)
-    const contents = rest.join(' ')
+    let [ command, ...rest ] = words(input, /[^\s]+/g)
+    let contents = rest.join(' ')
 
     let commandFound = false
     if (command === 'disconnect') {
       server.end(new Message({ username, command }).toJSON() + '\n')
+      commandFound = true
     } else if (command === 'echo') {
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
-      lastCommand = command
       commandFound = true
     } else if (command === 'users') {
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
-      lastCommand = command
       commandFound = true
     } else if (command === 'broadcast') {
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
-      lastCommand = command
       commandFound = true
     } else if (command.charAt(0) === '@') {
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
-      lastCommand = command
       commandFound = true
     }
-    if (!commandFound) {
+
+    if (commandFound) {
+      lastCommand = command
+    } else {
+      contents = command + ' ' + contents
       command = lastCommand
-      const [...rest] = words(input, /[^,]+/g)
-      const contents = rest.join(' ')
-      server.write(new Message({ username, command, contents }).toJSON() + '\n')
+  //    this.log(`Command <${command}>  contents <${contents}>  user <${username}>`)
       if (command === 'echo') {
         server.write(new Message({ username, command, contents }).toJSON() + '\n')
       } else if (command === 'users') {
@@ -72,6 +73,8 @@ cli
         server.write(new Message({ username, command, contents }).toJSON() + '\n')
       } else if (command.charAt(0) === '@') {
         server.write(new Message({ username, command, contents }).toJSON() + '\n')
+      } else {
+        this.log(`Command <${command}> was not recognized`)
       }
     }
 

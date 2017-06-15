@@ -46,16 +46,16 @@ public class ClientHandler implements Runnable {
 				String response;
 				
 				if (message.getCommand().charAt(0) == '@') {
-					String[] chopCommand = message.getCommand().split("\\s", 2);
-					log.info("user <{}> message <{}> to <{}>", message.getUsername(), chopCommand[1], chopCommand[0]);
-					if (clientList.containsKey(chopCommand[0].substring(1))) {
-						message.setContents(chopCommand[1]);
-						PrintWriter dmWriter = new PrintWriter(new OutputStreamWriter((clientList.get(chopCommand[0].substring(1))).getOutputStream()));
+			//		String[] chopCommand = message.getCommand().split("[@]", 2);
+					log.info("user <{}> message <{}> to <{}>", message.getUsername(), message.getContents(), message.getCommand());
+					if (clientList.containsKey(message.getCommand().substring(1))) {
+			//			message.setContents(chopCommand[1]);
+						PrintWriter dmWriter = new PrintWriter(new OutputStreamWriter((clientList.get(message.getCommand().substring(1))).getOutputStream()));
 						response = mapper.writeValueAsString(message);
 						dmWriter.write(response);
 						dmWriter.flush();
 					} else {
-						message.setContents(chopCommand[0] + " is not a valid user");
+						message.setContents(message.getUsername() + " is not a valid user");
 						response = mapper.writeValueAsString(message);
 						writer.write(response);
 						writer.flush();
