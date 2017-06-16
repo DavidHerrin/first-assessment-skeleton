@@ -59,16 +59,7 @@ cli
     if (command === 'disconnect') {
       server.end(new Message({ username, command }).toJSON() + '\n')
       commandFound = true
-    } else if (command === 'echo') {
-      server.write(new Message({ username, command, contents }).toJSON() + '\n')
-      commandFound = true
-    } else if (command === 'users') {
-      server.write(new Message({ username, command, contents }).toJSON() + '\n')
-      commandFound = true
-    } else if (command === 'broadcast') {
-      server.write(new Message({ username, command, contents }).toJSON() + '\n')
-      commandFound = true
-    } else if (command.charAt(0) === '@') {
+    } else if (command === 'echo' || command === 'users' || command === 'broadcast' || command.charAt(0) === '@') {
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
       commandFound = true
     }
@@ -79,13 +70,7 @@ cli
       // parsed command was actually part of contents
       contents = command + ' ' + contents
       command = lastCommand
-      if (command === 'echo') {
-        server.write(new Message({ username, command, contents }).toJSON() + '\n')
-      } else if (command === 'users') {
-        server.write(new Message({ username, command, contents }).toJSON() + '\n')
-      } else if (command === 'broadcast') {
-        server.write(new Message({ username, command, contents }).toJSON() + '\n')
-      } else if (command.charAt(0) === '@') {
+      if (command === 'echo' || command === 'users' || command === 'broadcast' || command.charAt(0) === '@') {
         server.write(new Message({ username, command, contents }).toJSON() + '\n')
       } else {
         this.log(`Command <${command}> was not recognized`)
